@@ -1,0 +1,7 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+.el-loading-spinner>* {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
