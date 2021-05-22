@@ -14,15 +14,20 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // Create Admin Account
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Admin',
-        //     'email' => 'admin@example.com',
-        //     'department' => 'admin',
-        //     'title' => 'admin',
-        //     'is_admin' => true,
-        // ]);
+        \App\Models\User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'department' => 'admin',
+            'title' => 'admin',
+            'is_admin' => true,
+        ]);
 
         // Create User Accounts
         \App\Models\User::factory(50)->create();
+
+         // Create User Account for Demo
+         \App\Models\User::factory()->create([
+             'email' => 'user@example.com',
+         ]);
     }
 }
