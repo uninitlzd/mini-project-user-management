@@ -1,4 +1,3 @@
-import Home from "./views/Home.vue";
 import About from "./views/About.vue";
 import NotFound from "./views/NotFound.vue";
 import Login from "./views/Login.vue";
@@ -6,11 +5,18 @@ import Dashboard from "./views/Dashboard.vue";
 import UserList from "./views/UserList.vue";
 import AddUser from "./views/AddUser.vue";
 import EditUser from "./views/EditUser.vue";
+import ChangePassword from "./views/ChangePassword.vue";
+import Profile from "./views/Profile.vue";
+import ProfileChangePassword from "./views/ProfileChangePassword.vue";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 /** @type {import('vue-router').RouterOptions['routes']} */
 export const routes = [{
         path: "/",
         component: Dashboard,
+        meta: { title: "Dashboard" },
         children: [{
                 path: "/users",
                 component: UserList,
@@ -24,20 +30,27 @@ export const routes = [{
                 name: "user.edit",
                 component: EditUser,
             },
+            {
+                path: "/users/:id/change-password",
+                name: "user.change-password",
+                component: ChangePassword,
+            },
+            {
+                path: "/profile",
+                meta: { title: "Profile" },
+                component: Profile,
+            },
+            {
+                path: "/profile/change-password",
+                meta: { title: "Profile - Change Password" },
+                component: ProfileChangePassword,
+            },
         ],
     },
     {
-        path: "/about",
-        meta: { title: "About" },
-        component: About,
-        // example of route level code-splitting
-        // this generates a separate chunk (About.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        // component: () => import('./views/About.vue')
-    },
-    {
         path: "/login",
+        meta: { title: "Login" },
         component: Login,
     },
-    { path: "/:path(.*)", component: NotFound },
+    { path: "/:path(.*)", name: 'not-found', component: NotFound },
 ];

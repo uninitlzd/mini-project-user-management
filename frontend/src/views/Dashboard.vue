@@ -13,39 +13,37 @@
             </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
-                <template v-for="(item, itemIdx) in navigation" :key="item">
-                  <template v-if="itemIdx === 0">
-                    <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                    <a
-                      :href="item.url"
-                      class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                      >{{ item.name }}</a
-                    >
-                  </template>
-                  <a
-                    v-else
-                    href="#"
-                    class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                    >{{ item.name }}</a
-                  >
-                </template>
+                <a
+                  v-if="auth.user?.is_admin ?? false"
+                  href="/users"
+                  class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                  >Users</a
+                >
               </div>
             </div>
           </div>
           <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
               <!-- Profile dropdown -->
+              <span v-if="auth.user?.is_admin ?? false" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >ADMIN</span
+              >
+              <span v-else class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                >{{ auth.user?.name ?? 'user' }} - USER</span
+              >
               <Menu as="div" class="ml-3 relative">
                 <div>
                   <MenuButton
                     class="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                   >
                     <span class="sr-only">Open user menu</span>
-                    <img
-                      class="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
-                    />
+                    <div
+                      class="h-10 w-10 rounded-full bg-blue-500 flex items-center"
+                    >
+                      <span class="mx-auto text-white font-semibold">{{
+                        auth.user?.name[0] ?? "A"
+                      }}</span>
+                    </div>
                   </MenuButton>
                 </div>
                 <transition
@@ -59,27 +57,20 @@
                   <MenuItems
                     class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
-                    <MenuItem
-                        :key="1"
-                    >
-                      <a
-                        href="#"
-                        :class="[
-                          'block px-4 py-2 text-sm text-gray-700',
-                        ]"
-                        >Profile</a
+                    <MenuItem :key="1">
+                      <router-link
+                        to="/profile"
+                        :class="['block px-4 py-2 text-sm text-gray-700']"
+                        >Profile</router-link
                       >
                     </MenuItem>
-                    <MenuItem
-                        :key="2"
-                    >
-                      <router-link
-                        to="/login"
-                        :class="[
-                          'block px-4 py-2 text-sm text-gray-700',
-                        ]"
-                        >Sign Out</router-link
+                    <MenuItem :key="2">
+                      <button
+                        @click="signOut"
+                        :class="['block px-4 py-2 text-sm text-gray-700']"
                       >
+                        Sign Out
+                      </button>
                     </MenuItem>
                   </MenuItems>
                 </transition>
@@ -154,7 +145,7 @@
         </div>
       </DisclosurePanel>
     </Disclosure>
-    
+
     <main>
       <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <router-view></router-view>
@@ -164,7 +155,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import {
   Disclosure,
   DisclosureButton,
@@ -175,13 +166,11 @@ import {
   MenuItems,
 } from "@headlessui/vue";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/vue/outline";
+import authService from "@/api/auth.api";
+import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
+import useAuthenticationChecking from "@/composables/useAuthenticationChecking";
 
-const navigation = [
-  {
-    name: "Users",
-    url: "/users",
-  },
-];
 const profile = ["Your Profile", "Settings", "Sign out"];
 
 export default {
@@ -198,12 +187,37 @@ export default {
     XIcon,
   },
   setup() {
+    const store = useStore();
+    const router = useRouter();
+    const route = useRoute();
+    // const token = cookies.get('x-access-token');
+    const { auth } = useAuthenticationChecking();
+
+    onBeforeMount(() => {
+      if (auth.user != null && route.path == "/") {
+        if (auth.user.is_admin) {
+          router.push("/users");
+        } else {
+          router.push("/profile");
+        }
+      }
+    });
+
     const open = ref(false);
 
+    const signOut = async () => {
+      try {
+        await authService.logout();
+      } finally {
+        store.dispatch("auth/logout");
+        router.push("/login");
+      }
+    };
+
     return {
-      navigation,
-      profile,
+      auth,
       open,
+      signOut,
     };
   },
 };

@@ -2,18 +2,14 @@
   <div>
     <header class="bg-white">
       <div class="flex items-center py-6">
-        <router-link to="/users"
-          ><ArrowNarrowLeftIcon
-            class="w-7 mr-4 text-blue-500 hover:text-blue-700"
-        /></router-link>
-        <h1 class="text-3xl font-bold text-gray-900">Edit User</h1>
+        <router-link to="/profile"  class="text-3xl font-bold text-gray-900 mr-4">Profile</router-link>
+        <router-link to="/profile/change-password" class="text-3xl font-bold text-gray-400">Change Password</router-link>
       </div>
     </header>
     <div class="md:grid md:grid-cols-1 md:gap-6">
       <div class="mt-5 md:mt-0 md:col-span-2">
         <div class="shadow sm:rounded-md sm:overflow-hidden">
           <div class="px-4 py-5 bg-white space-y-6 sm:p-6 border-b">
-            <span class="text-sm tracking-wider text-gray-400">PROFILE</span>
             <div>
               <form-error-alert />
             </div>
@@ -129,27 +125,29 @@ export default {
   },
   setup() {
     const formData = ref({});
+
     const route = useRoute();
-    const router = useRouter();
     const store = useStore();
+    const auth = store.state.auth 
+
+    console.log('herererere', auth.user)
 
     onBeforeMount(async () => {
-      await userService.show(route.params.id)
+      await userService.show(auth.user.id)
       .then((response) => {
         console.log(response);
         formData.value = response.data.data;
       })
     .catch((e) => {
-        console.log('hereee', e.status)
         if (e.status == 401 || e.status == 404) {
-          router.push({name: 'not-found', params: {path: 'not-found'}})
+        //   router.push({name: 'not-found', params: {path: 'not-found'}})
         }
         return false
       });
     });
 
     const saveProfileChanges = async () => {
-      await userService.update(route.params.id, formData.value).then(response => {
+      await userService.update(auth.user.id, formData.value).then(response => {
         ElNotification.success({
           title: 'Success',
           message: 'Profile update success',

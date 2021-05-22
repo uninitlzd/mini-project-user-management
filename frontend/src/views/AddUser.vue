@@ -11,10 +11,10 @@
     </header>
     <div class="md:grid md:grid-cols-1 md:gap-6">
       <div class="mt-5 md:mt-0 md:col-span-2">
-        <form action="#" method="POST">
           <div class="shadow sm:rounded-md sm:overflow-hidden">
             <div class="px-4 py-5 bg-white space-y-6 sm:p-6 border-b">
               <span class="text-sm tracking-wider text-gray-400">PROFILE</span>
+              <form-error-alert/>
               <div class="grid grid-cols-2 gap-6">
                 <div class="col-span-1 sm:col-span-1">
                   <label
@@ -25,6 +25,7 @@
                   </label>
                   <div class="mt-1 flex rounded-md shadow-sm">
                     <input
+                      v-model="formData.name"
                       type="text"
                       name="user_name"
                       id="user_name"
@@ -42,11 +43,12 @@
                   </label>
                   <div class="mt-1 flex rounded-md shadow-sm">
                     <input
+                      v-model="formData.email"
                       type="email"
                       name="user_email"
                       id="user_email"
                       class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                      placeholder="John Doe"
+                      placeholder="email@example.com"
                     />
                   </div>
                 </div>
@@ -59,11 +61,12 @@
                   </label>
                   <div class="mt-1 flex rounded-md shadow-sm">
                     <input
+                      v-model="formData.title"
                       type="text"
                       name="user_title"
                       id="user_title"
                       class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                      placeholder="John Doe"
+                      placeholder="Manager"
                     />
                   </div>
                 </div>
@@ -76,11 +79,12 @@
                   </label>
                   <div class="mt-1 flex rounded-md shadow-sm">
                     <input
+                      v-model="formData.department"
                       type="text"
                       name="user_department"
                       id="user_department"
                       class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                      placeholder="John Doe"
+                      placeholder="Company Name"
                     />
                   </div>
                 </div>
@@ -97,6 +101,7 @@
                   </label>
                   <div class="mt-1 flex rounded-md shadow-sm">
                     <input
+                      v-model="formData.password"
                       :type="(passwordVisible) ? 'text' : 'password'"
                       name="password"
                       id="password"
@@ -115,14 +120,14 @@
             </div>
             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
               <button
+                @click="createNewUser"
                 type="submit"
                 class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Save
+                Create
               </button>
             </div>
           </div>
-        </form>
       </div>
     </div>
   </div>
@@ -130,20 +135,64 @@
 
 <script>
 import { ArrowNarrowLeftIcon, EyeIcon, EyeOffIcon } from "@heroicons/vue/solid";
-import { ref } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 import { computed, onBeforeMount } from "@vue/runtime-core";
 import { useRoute } from "vue-router";
+import FormErrorAlert from '@/components/FormErrorAlert.vue';
+import userService from '@/api/user.api'
+import { ElNotification } from 'element-plus';
+import { useStore } from 'vuex';
+
 export default {
   components: {
     ArrowNarrowLeftIcon,
     EyeIcon,
-    EyeOffIcon
+    EyeOffIcon,
+    FormErrorAlert
   },
   setup() {
     const passwordVisible = ref(false)
+    const formData = reactive({
+      name: null,
+      email: null,
+      title: null,
+      department: null,
+      password: null
+    })
+
+    const loading = ref(false)
+    const store = useStore();
+
+    const createNewUser = async () => {
+      loading.value = true
+      await userService.create(formData).then(response => {
+        ElNotification.success({
+          title: 'New user created'
+        })
+
+        formData.name = null;
+        formData.email = null;
+        formData.title = null;
+        formData.department = null;
+        formData.password = null;
+      })
+
+      store.dispatch('errorBag/clear')
+      .catch(e => {
+        ElNotification.error({
+          title: 'Action failed'
+        })
+      })
+      .finally(() => {
+        loading.value = false
+      })
+    } 
 
     return {
-      passwordVisible
+      passwordVisible,
+      formData,
+      loading,
+      createNewUser
     }
   },
 };
