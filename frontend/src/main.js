@@ -24,14 +24,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    const { isNeedRefreshToken, isAuthenticated, token } =
+    const { isNeedRefreshToken, isAuthenticated, token, auth } =
     useAuthenticationChecking();
 
     store.dispatch("errorBag/clear");
 
-    if (to.path == '/') {
-        if (!isAuthenticated) {
-            router.push('/login')
+    if (to.meta.authenticated && !isAuthenticated) {
+        router.push('/login')
+    }
+
+    if (isAuthenticated) {
+        if (to.meta.role === 'admin' && !auth.user.is_admin) {
+            router.push({ name: 'not-found', params: { path: 'not-found' } })
         }
     }
 

@@ -16,33 +16,49 @@ const store = useStore();
 export const routes = [{
         path: "/",
         component: Dashboard,
-        meta: { title: "Dashboard" },
+        meta: { title: "Dashboard", authenticated: true },
         children: [{
                 path: "/users",
                 component: UserList,
+                meta: {
+                    title: "User List",
+                    role: "admin",
+                },
             },
             {
                 path: "users/add",
                 component: AddUser,
+                meta: {
+                    title: "User Add",
+                    role: "admin",
+                },
             },
             {
                 path: "/users/:id",
                 name: "user.edit",
                 component: EditUser,
+                meta: {
+                    title: "User Edit",
+                    role: "admin",
+                },
             },
             {
                 path: "/users/:id/change-password",
                 name: "user.change-password",
                 component: ChangePassword,
+                meta: {
+                    title: "Changes user password",
+                    role: "admin",
+                },
             },
             {
                 path: "/profile",
-                meta: { title: "Profile" },
+                meta: { title: "Profile", role: 'any' },
                 component: Profile,
             },
             {
                 path: "/profile/change-password",
-                meta: { title: "Profile - Change Password" },
+                meta: { title: "Profile - Change Password", role: 'any' },
                 component: ProfileChangePassword,
             },
         ],
@@ -52,5 +68,10 @@ export const routes = [{
         meta: { title: "Login" },
         component: Login,
     },
-    { path: "/:path(.*)", name: 'not-found', component: NotFound },
+    {
+        path: "/:path(.*)",
+        name: "not-found",
+        component: NotFound,
+        meta: { title: "404 - Page Not Found" },
+    },
 ];
