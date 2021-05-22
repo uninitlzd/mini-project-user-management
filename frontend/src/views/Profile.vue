@@ -105,10 +105,11 @@
 
 <script>
 import { ArrowNarrowLeftIcon, EyeIcon, EyeOffIcon } from "@heroicons/vue/solid";
-import { reactive, ref } from "@vue/reactivity";
+import { ref } from "@vue/reactivity";
 import { onBeforeMount, onMounted } from "@vue/runtime-core";
 import userService from "@/api/user.api";
-import { useRoute, useRouter } from "vue-router";
+import authService from "@/api/auth.api"
+
 import {
   ElNotification
 } from "element-plus"
@@ -125,8 +126,6 @@ export default {
   },
   setup() {
     const formData = ref({});
-
-    const route = useRoute();
     const store = useStore();
     const auth = store.state.auth 
 
@@ -138,11 +137,15 @@ export default {
     });
 
     const saveProfileChanges = async () => {
-      await userService.update(auth.user.id, formData.value).then(response => {
+      await userService.update(auth.user.id, formData.value).then(async () => {
         ElNotification.success({
           title: 'Success',
           message: 'Profile update success',
         })
+
+         await authService.getUserProfile().then((response) => {
+                store.dispatch("auth/setUser", response.data.data);
+            });
 
         store.dispatch("errorBag/clear");
       })

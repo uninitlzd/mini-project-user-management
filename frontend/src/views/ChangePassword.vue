@@ -107,7 +107,7 @@
             <div class="grid grid-cols-2 gap-6">
               <div class="col-span-1 sm:col-span-3">
                 <label
-                  for="password"
+                  for="password2"
                   class="block text-sm font-medium text-gray-700"
                 >
                   New Password
@@ -117,7 +117,7 @@
                     v-model="passwordFormData.new_password"
                     :type="passwordVisible ? 'text' : 'password'"
                     name="password"
-                    id="password"
+                    id="password2"
                     class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
                   />
                   <span
