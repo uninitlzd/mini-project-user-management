@@ -26,7 +26,8 @@ class UserController extends Controller
     {
         return UserResource::collection(
             User::where('is_admin', false)
-                ->get()
+                ->orderBy('updated_at', 'desc')
+                ->paginate(10)
         );
     }
 

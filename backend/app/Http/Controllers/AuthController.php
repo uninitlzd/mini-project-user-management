@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UnauthorizedActionException;
 use App\Models\User;
 use App\Utilities\ProxyRequest;
 use Illuminate\Http\Request;
@@ -20,11 +21,10 @@ class AuthController extends Controller
     {
         $user = User::where('email', request('email'))->first();
 
-        abort_unless($user, 404, 'This combination does not exists.');
-        abort_unless(
+        throw_unless($user, new UnauthorizedActionException('This combination does not exists.'));
+        throw_unless(
             Hash::check(request('password'), $user->password),
-            403,
-            'This combination does not exists.'
+            new UnauthorizedActionException('This combination does not exists.')
         );
 
         $resp = $this->proxy
