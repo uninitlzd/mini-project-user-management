@@ -36,7 +36,7 @@ This repository includes backend and frontend code, implemented using Laravel, V
 
     ```php artisan passport:install```
     
-9. Set PASSPORT_CLIENT_ID and PASSPORT_CLIENT_SECRET of .env using Password Grant client id and client secret from the result of passport install command    
+9. Set **PASSPORT_CLIENT_ID** and **PASSPORT_CLIENT_SECRET** of .env using Password Grant client id and client secret from the result of passport install command    
 
 10. Start the local development server
 
