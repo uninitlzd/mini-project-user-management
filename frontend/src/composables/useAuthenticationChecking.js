@@ -10,6 +10,8 @@ export default function useAuthenticationChecking() {
 
     const isAdmin = ref(false);
     const isAuthenticated = (auth.user != null) ? true : false;
+
+    // Determine if access token has expired and user not logged out yet
     const isNeedRefreshToken = (auth.user != null && !token) ? true : false;
 
     if (auth.user != null) {

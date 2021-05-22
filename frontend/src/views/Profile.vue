@@ -130,20 +130,11 @@ export default {
     const store = useStore();
     const auth = store.state.auth 
 
-    console.log('herererere', auth.user)
-
     onBeforeMount(async () => {
       await userService.show(auth.user.id)
       .then((response) => {
-        console.log(response);
         formData.value = response.data.data;
       })
-    .catch((e) => {
-        if (e.status == 401 || e.status == 404) {
-        //   router.push({name: 'not-found', params: {path: 'not-found'}})
-        }
-        return false
-      });
     });
 
     const saveProfileChanges = async () => {
@@ -156,7 +147,6 @@ export default {
         store.dispatch("errorBag/clear");
       })
       .catch((e) => {
-        console.log(e)
         ElNotification.error({
           title: 'Error',
           message: 'Profile update failed',

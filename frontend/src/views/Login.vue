@@ -86,14 +86,12 @@ export default defineComponent({
     const { isAuthenticated } = useAuthenticationChecking()
 
     onBeforeMount(() => {
-        console.log(isAuthenticated)
       if (isAuthenticated) {
         router.push("/users");
       }
     });
 
     const login = async () => {
-      console.log(formData);
       await authService.login(formData)
       .then(async (response) => {
         const { token, expiresIn } = response.data;
@@ -113,8 +111,6 @@ export default defineComponent({
           })
       });
 
-
-      console.log(auth)
 
       if (auth.user.is_admin) {
           router.push('/users')

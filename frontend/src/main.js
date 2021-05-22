@@ -39,7 +39,6 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach((to, from) => {
-    // console.log(auth);
     nextTick(() => {
         document.title = to.meta.title;
     });

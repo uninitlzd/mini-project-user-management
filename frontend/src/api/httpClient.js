@@ -24,20 +24,16 @@ const refreshTokenHttpClient = axios.create({
 });
 
 httpClient.setToken = (token) => {
-    console.log(token);
     httpClient.defaults.headers["common"]["Authorization"] = `Bearer ${token}`;
 };
 
 httpClient.interceptors.request.use(
     async(request) => {
-        console.log(request);
         const { isNeedRefreshToken, isAuthenticated, token, auth } = useAuthenticationChecking();
 
-        console.log("need refresh: ", isNeedRefreshToken);
         if (isNeedRefreshToken) {
             store.dispatch('auth/setIsRefreshingState', true);
 
-            console.log('auth', auth, isAuthenticated);
             await refreshTokenHttpClient
                 .post("refresh-token")
                 .then((response) => {
@@ -68,17 +64,16 @@ httpClient.interceptors.response.use(
         return response;
     },
     function(error) {
-        console.log(error);
+
         // check if it's a server error
         if (!error.response) {
-            // notify.warn("Network/Server error");
             return Promise.reject(error);
         }
 
         // all the error responses
         switch (error.response.status) {
             case 422:
-                console.log('heree', error.response)
+                // Save form validation error from server to vuex state
                 store.dispatch("errorBag/setData", {
                     errors: error.response.data.errors,
                     message: error.response.data.message,

@@ -128,7 +128,6 @@
                   <a
                     @click="(currentPage > 1) ? updatePage(currentPage - 1) : false"
                     href="#"
-                    :disabled="page == 1"
                     :class="[
                       'relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50',
                       {

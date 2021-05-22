@@ -122,11 +122,9 @@ export default {
       await userService
         .show(auth.user.id)
         .then((response) => {
-          console.log(response);
           formData.value = response.data.data;
         })
         .catch((e) => {
-          console.log("hereee", e.status);
           if (e.status == 401 || e.status == 404) {
             router.push({ name: "not-found", params: { path: "not-found" } });
           }
@@ -149,7 +147,6 @@ export default {
           passwordFormData.new_password = null;
         })
         .catch((e) => {
-          console.log(e);
           ElNotification.error({
             title: "Error",
             message: "Password change failed",
