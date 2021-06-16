@@ -1,6 +1,6 @@
 # mini-project-user-management
 
-This repository includes backend and frontend code, implemented using Laravel, Vue 3, and TailwindCSS
+This repository includes backend and frontend code, implemented using Laravel, Laravel Passport for Auth, Vue 3, and TailwindCSS
 
 ## Installation
 
